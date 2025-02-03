@@ -53,7 +53,7 @@ app.use((req, res, next) => {
     req.path.startsWith("/unauthorized")
   ) {
     app.set("layout", "./layouts/auth");
-  } else if (req.path.startsWith("/admin/")) {
+  } else if (req.path.startsWith("/admin/") || req.path.startsWith("/admin")) {
     app.set("layout", "./layouts/main");
   } else {
     app.set("layout", "./layouts/client");

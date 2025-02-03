@@ -103,10 +103,10 @@
                                     <label for="buktiFotoInput">Bukti Foto</label>
                                     <div class="gallery">
                                         <% data.detailDataTransaction.bukti_foto.forEach(foto=> { %>
-                                            <a href="/<%= foto.file_name %>">
+                                            <a href="<%= foto.file_path %>">
                                                 <img class="mr-2 border"
                                                     style="width: 100px; height: 100px;object-fit: cover;"
-                                                    src="/<%= foto.file_name %>" alt="<%= foto.file_name %>">
+                                                    src="<%= foto.file_path %>" alt="<%= foto.file_name %>">
                                             </a>
                                             <% }) %>
                                     </div>

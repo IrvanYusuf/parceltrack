@@ -3,16 +3,16 @@ const path = require("path");
 const transactionController = require("../controllers/transactionController.js");
 const authGuard = require("../middleware/authGuard.js");
 const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, "../uploads"));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, `${Date.now()}_${file.originalname}`);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+const upload = multer();
 router.get("/", authGuard(["Admin", "Pegawai"]), transactionController.show);
 
 router.get("/add", authGuard(["Admin"]), transactionController.create);

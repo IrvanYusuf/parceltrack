@@ -1,6 +1,18 @@
+const path = require("path");
 const supabase = require("../config/supabase.js");
 const nameTable = "tbl_transactions";
 const moment = require("moment");
+require("dotenv").config();
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
+// Konfigurasi Cloudinary dengan kredensial API kamu
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const show = async (req, res) => {
   try {
     let { data: dataTransactions, error } = await supabase
@@ -84,9 +96,38 @@ const store = async (req, res) => {
     const files = req.files;
     const buktiFoto = [];
 
-    for (const file of files) {
-      const filePath = `uploads/${Date.now()}_${file.originalname}`;
-      buktiFoto.push({ file_name: file.filename, file_path: filePath });
+    const uploadPromises = files.map((file) => {
+      return new Promise((resolve, reject) => {
+        // Upload file ke Cloudinary menggunakan stream
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "parcel-track",
+          },
+          (error, result) => {
+            if (error) {
+              buktiFoto.push({ file_name: file.originalname, file_path: null });
+              reject(error); // Menangani error dengan reject
+            } else {
+              buktiFoto.push({
+                file_name: file.originalname,
+                file_path: result.secure_url, // URL file yang diupload di Cloudinary
+              });
+              resolve(result); // Menyelesaikan promise ketika upload berhasil
+            }
+          }
+        );
+
+        // Convert buffer menjadi stream dan pipe ke Cloudinary
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      });
+    });
+
+    // Tunggu semua file selesai diupload
+    try {
+      await Promise.all(uploadPromises);
+      console.log("All files uploaded successfully");
+    } catch (err) {
+      console.error("Error uploading one or more files:", err);
     }
 
     const payload = {
