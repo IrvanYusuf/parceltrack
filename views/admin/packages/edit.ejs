@@ -1,0 +1,34 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Update Data Paket</h1>
+    <a href="/admin/packages" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-arrow-left fa-sm text-white"></i> Kembali</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form method="post" action="/admin/packages/update/<%= data.dataPackages.id %>?_method=PUT">
+                    <div class="form-group">
+                        <label for="nameInput">Name</label>
+                        <input type="text" class="form-control" id="nameInput" aria-describedby="emailHelp" name="name"
+                            value="<%= data.dataPackages.name %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="priceInput">Price</label>
+                        <input type="number" class="form-control" id="priceInput" aria-describedby="emailHelp"
+                            name="price" value="<%= data.dataPackages.price %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailInput">Description</label>
+                        <textarea class="form-control" id="emailInput" aria-describedby="emailHelp" name="description"
+                            rows="5"><%= data.dataPackages.description %></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-end">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

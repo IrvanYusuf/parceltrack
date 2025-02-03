@@ -1,0 +1,172 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Data Transaksi</h1>
+    <a href="/admin/transactions" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-arrow-left fa-sm text-white"></i> Kembali</a>
+</div>
+
+<div class="card shadow mb-4" style="padding-bottom: 100px;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <form method="post" action="/admin/transactions/update/<%= data.detailDataTransaction.id %>?_method=put">
+                    <div class="form-group">
+                        <label for="noResiInput">No Resi</label>
+                        <input type="text" class="form-control" id="noResiInput" aria-describedby="emailHelp"
+                            name="no_resi" value="<%= data.detailDataTransaction.no_resi %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="namaBarangInput">Nama Barang</label>
+                        <input type="text" class="form-control" id="namaBarangInput" aria-describedby="emailHelp"
+                            name="nama_barang" value="<%= data.detailDataTransaction.nama_barang %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Customer</label>
+                        <input type="hidden" class="form-control" name="customer_id"
+                            value="<%= data.detailDataTransaction.customer.id %>">
+                        <input type="text" class="form-control" value="<%= data.detailDataTransaction.customer.name %>"
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Paket</label>
+                        <input type="hidden" class="form-control" name="package_id"
+                            value="<%= data.detailDataTransaction.paket.id %>">
+                        <input type="text" class="form-control" value="<%= data.detailDataTransaction.paket.name %>"
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="biayaPaketInput">Biaya Paket</label>
+                        <input type="text" class="form-control" id="biayaPaketInput" aria-describedby="emailHelp"
+                            readonly id="biayaPaketInput" value="<%= new Intl.NumberFormat('id-ID', {
+                                style: 'currency', currency: 'IDR',
+                                maximumFractionDigits: 0
+                            }).format(data.detailDataTransaction.paket.price) %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Stasiun Awal</label>
+                        <select class="form-control selectpicker" name="stasiun_awal_id" data-live-search="true"
+                            required>
+                            <option disabled selected>Pilih Stasiun Awal</option>
+                            <% data.dataStations.map(station=> { %>
+                                <option value="<%= station.id %>"
+                                    <%=data.detailDataTransaction.stasiun_awal.id==station.id ? 'selected' : '' %>>
+                                    <%= station.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Stasiun Tujuan</label>
+                        <select class="form-control selectpicker" name="stasiun_tujuan_id" data-live-search="true"
+                            required>
+                            <option disabled selected>Pilih Stasiun Tujuan</option>
+                            <% data.dataStations.map(station=> { %>
+                                <option value="<%= station.id %>"
+                                    <%=data.detailDataTransaction.stasiun_tujuan.id==station.id ? 'selected' : '' %>>
+                                    <%= station.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="buktiFotoInput">Bukti Foto (Tidak bisa diubah)</label>
+                        <input type="hidden" class="form-control" id="buktiFotoInput" aria-describedby="emailHelp"
+                            name="bukti_foto" accept="image/*" multiple required>
+                        <div class="gallery">
+                            <% data.detailDataTransaction.bukti_foto.forEach(foto=> { %>
+                                <a href="/<%= foto.file_name %>">
+                                    <img class="mr-2 border" style="width: 100px; height: 100px;object-fit: cover;"
+                                        src="/<%= foto.file_name %>" alt="<%= foto.file_name %>">
+                                </a>
+                                <% }) %>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <h5 class="mb-3">Status Pengiriman</h5>
+                        <table class="table d-none d-md-block table-bordered text-center table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Telah Konfirmasi</th>
+                                    <th>Telah Dikemas</th>
+                                    <th>Sedang Dikirim</th>
+                                    <th>Telah Tiba</th>
+                                    <th>Telah Diterima</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" aria-label="Checkbox for following text input"
+                                            name="is_confirmed" <% if (data.detailTransactionStatus.is_confirmed) { %>
+                                        checked <% } %> >
+                                    </td>
+                                    <td><input type="checkbox" aria-label="Checkbox for following text input"
+                                            name="is_packaging" <% if (data.detailTransactionStatus.is_packaging) { %>
+                                        checked <% } %>></td>
+                                    <td><input type="checkbox" aria-label="Checkbox for following text input"
+                                            name="is_transit" <% if (data.detailTransactionStatus.is_transit) { %>
+                                        checked <% } %>></td>
+                                    <td><input type="checkbox" aria-label="Checkbox for following text input"
+                                            name="is_arrived" <% if (data.detailTransactionStatus.is_arrived) { %>
+                                        checked <% } %>></td>
+                                    <td><input type="checkbox" aria-label="Checkbox for following text input"
+                                            name="is_delivered" <% if (data.detailTransactionStatus.is_delivered) { %>
+                                        checked <% } %>></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-end" style="margin-top: 90px;">
+                        <a href="/admin/transactions" class=" btn btn-outline-danger mr-3">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const jenisPaketSelect = document.getElementById("jenisPaketSelect");
+        const biayaPaketInput = document.getElementById("biayaPaketInput");
+        console.log('jenis paket select', jenisPaketSelect);
+
+        jenisPaketSelect.addEventListener("change", function () {
+            console.log('tes');
+
+            const selectedOption = jenisPaketSelect.options[jenisPaketSelect.selectedIndex];
+            const hargaPaket = selectedOption.getAttribute("data-price");
+
+            biayaPaketInput.value = hargaPaket ? new Intl.NumberFormat('id-ID', {
+                style: 'currency', currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(hargaPaket) : "";
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const stasiunAwalSelect = document.querySelector("select[name='stasiun_awal_id']");
+        const stasiunTujuanSelect = document.querySelector("select[name='stasiun_tujuan_id']");
+
+        // Simpan semua opsi awal Stasiun Tujuan
+        const initialOptions = Array.from(stasiunTujuanSelect.querySelectorAll("option"));
+
+        stasiunAwalSelect.addEventListener("change", function () {
+            const selectedValue = this.value;
+
+            // Kosongkan dropdown Stasiun Tujuan
+            stasiunTujuanSelect.innerHTML = "";
+
+            // Tambahkan kembali semua opsi kecuali yang dipilih di Stasiun Awal
+            initialOptions.forEach(option => {
+                if (option.value !== selectedValue) {
+                    stasiunTujuanSelect.appendChild(option.cloneNode(true));
+                }
+            });
+
+            // Refresh selectpicker agar opsi yang diperbarui muncul dengan benar
+            $(stasiunTujuanSelect).selectpicker('refresh');
+        });
+    });
+
+</script>

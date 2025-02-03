@@ -1,0 +1,314 @@
+<div class="container mx-auto row justify-content-center align-items-center" style="margin-top: 80px;">
+    <div class="col-12 col-md-10">
+        <div class="card shadow" style="padding-bottom: 80px;">
+            <div class="card-body">
+                <h3 class="text-center mb-4">Cek Resi Paket</h3>
+                <div class="d-flex justify-content-end align-items-center mb-4">
+                    <button class="btn btn-danger btn-sm" id="resetFilterBtn">Reset Filter</button>
+                </div>
+                <form action="" method="GET">
+                    <label for="noResi">Nomor Resi</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="noResi" name="q" placeholder="Masukkan Nomor Resi"
+                            required value="<%= data.search || '' %>">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Cek Status</button>
+                        </div>
+                    </div>
+                </form>
+                <% if (data && data.detailDataTransaction) { %>
+                    <hr>
+                    <% if (data.detailDataTransaction.length===0) { %>
+                        <h5 class="text-center mt-5">Data Tidak Ditemukan</h5>
+                        <% } else{ %>
+                            <div>
+                                <div>
+                                    <h5>Detail Customer</h5>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                            <label for="noResiInput">Nama Customer</label>
+                                            <input type="text" class="form-control" id="noResiInput"
+                                                aria-describedby="emailHelp"
+                                                value="<%= data.detailDataTransaction.customer.name %>" readonly>
+                                        </div>
+                                        <div class="form-group col">
+                                            <label for="namaBarangInput">No Hp</label>
+                                            <input type="text" class="form-control" id="namaBarangInput"
+                                                aria-describedby="emailHelp"
+                                                value="<%= data.detailDataTransaction.customer.no_hp %>" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5>Detail Paket</h5>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                            <label for="noResiInput">No Resi</label>
+                                            <input type="text" class="form-control" id="noResiInput"
+                                                aria-describedby="emailHelp" name="no_resi"
+                                                value="<%= data.detailDataTransaction.no_resi %>" readonly>
+                                        </div>
+                                        <div class="form-group col">
+                                            <label for="namaBarangInput">Nama Barang</label>
+                                            <input type="text" class="form-control" id="namaBarangInput"
+                                                aria-describedby="emailHelp" name="nama_barang"
+                                                value="<%= data.detailDataTransaction.nama_barang %>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                            <label for="biayaPaketInput">Nama Paket</label>
+                                            <input type="text" class="form-control" id="biayaPaketInput"
+                                                aria-describedby="emailHelp" readonly
+                                                value="<%= data.detailDataTransaction.paket.name %>">
+                                        </div>
+                                        <div class="form-group col">
+                                            <label for="biayaPaketInput">Biaya Paket</label>
+                                            <input type="text" class="form-control" id="biayaPaketInput"
+                                                aria-describedby="emailHelp" readonly value="<%= new Intl.NumberFormat('id-ID', {
+                                                    style: 'currency', currency: 'IDR',
+                                                    maximumFractionDigits: 0
+                                                }).format(data.detailDataTransaction.paket.price) %>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="biayaPaketInput">Estimasi Tiba</label>
+                                        <input type="text" class="form-control" id="biayaPaketInput"
+                                            aria-describedby="emailHelp" readonly
+                                            value="<%= data.detailDataTransaction.paket.estimation %> hari">
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5>Detail Stasiun</h5>
+                                    <hr>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="form-group col">
+                                            <label for="noResiInput">Stasiun Awal</label>
+                                            <input type="text" class="form-control" id="noResiInput"
+                                                aria-describedby="emailHelp"
+                                                value="<%= data.detailDataTransaction.stasiun_awal.name %>" readonly>
+                                        </div>
+
+                                        <div class="form-group col">
+                                            <label for="namaBarangInput">Stasiun Tujuan</label>
+                                            <input type="text" class="form-control" id="namaBarangInput"
+                                                aria-describedby="emailHelp"
+                                                value="<%= data.detailDataTransaction.stasiun_tujuan.name %>" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="buktiFotoInput">Bukti Foto</label>
+                                    <div class="gallery">
+                                        <% data.detailDataTransaction.bukti_foto.forEach(foto=> { %>
+                                            <a href="/<%= foto.file_name %>">
+                                                <img class="mr-2 border"
+                                                    style="width: 100px; height: 100px;object-fit: cover;"
+                                                    src="/<%= foto.file_name %>" alt="<%= foto.file_name %>">
+                                            </a>
+                                            <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div>
+                                <h5 class="mb-3">Status Pengiriman</h5>
+                                <div class="d-flex align-items-center">
+                                    <% if (data.detailTransactionStatus) { %>
+                                        <div class="d-flex flex-column align-items-center position-relative">
+                                            <div class="<%= data.detailTransactionStatus.is_confirmed ? 'bg-primary' :'bg-secondary' %> d-flex justify-content-center align-items-center"
+                                                style="width: 30px;height: 30px;border-radius: 50%;">
+                                                <% if (data.detailTransactionStatus.is_confirmed) { %>
+
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="#fff" fill-rule="evenodd"
+                                                            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                            </div>
+                                            <h6 class="text-center"
+                                                style="font-size: 12px;position: absolute;top: 40px;">
+                                                Telah
+                                                Dikonfirmasi</h6>
+                                        </div>
+                                        <div class="<%= data.detailTransactionStatus.is_confirmed ? 'bg-primary' :'bg-secondary' %>"
+                                            style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center position-relative">
+                                            <div class="<%=data.detailTransactionStatus.is_packaging ? 'bg-primary' :'bg-secondary' %> d-flex justify-content-center align-items-center"
+                                                style="width: 30px;height: 30px;border-radius: 50%;">
+                                                <% if (data.detailTransactionStatus.is_packaging) { %>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="#fff" fill-rule="evenodd"
+                                                            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                            </div>
+                                            <h6 class="text-center"
+                                                style="font-size: 12px;position: absolute;top: 40px;">
+                                                Sedang
+                                                Dikemas
+                                            </h6>
+                                        </div>
+                                        <div class="<%=data.detailTransactionStatus.is_packaging ? 'bg-primary' :'bg-secondary' %>"
+                                            style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center position-relative">
+                                            <div class="<%=data.detailTransactionStatus.is_transit ? 'bg-primary' :'bg-secondary' %> d-flex justify-content-center align-items-center"
+                                                style="width: 30px;height: 30px;border-radius: 50%;">
+                                                <% if (data.detailTransactionStatus.is_transit) { %>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="#fff" fill-rule="evenodd"
+                                                            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                            </div>
+                                            <h6 class="text-center"
+                                                style="font-size: 12px;position: absolute;top: 40px;">
+                                                Sedang
+                                                Dikirim
+                                            </h6>
+                                        </div>
+                                        <div class="<%=data.detailTransactionStatus.is_transit ? 'bg-primary' :'bg-secondary' %>"
+                                            style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center position-relative">
+                                            <div class="<%=data.detailTransactionStatus.is_arrived ? 'bg-primary' :'bg-secondary' %> d-flex justify-content-center align-items-center"
+                                                style="width: 30px;height: 30px;border-radius: 50%;">
+                                                <% if (data.detailTransactionStatus.is_arrived) { %>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="#fff" fill-rule="evenodd"
+                                                            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                            </div>
+                                            <h6 class="text-center"
+                                                style="font-size: 12px;position: absolute;top: 40px;">
+                                                Telah
+                                                Sampai
+                                            </h6>
+                                        </div>
+                                        <div class="<%=data.detailTransactionStatus.is_arrived ? 'bg-primary' :'bg-secondary' %>"
+                                            style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center position-relative">
+                                            <div class="<%=data.detailTransactionStatus.is_delivered ? 'bg-primary' :'bg-secondary' %> d-flex justify-content-center align-items-center"
+                                                style="width: 30px;height: 30px;border-radius: 50%;">
+                                                <% if (data.detailTransactionStatus.is_delivered) { %>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24">
+                                                        <path fill="#fff" fill-rule="evenodd"
+                                                            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                    <% } %>
+                                            </div>
+                                            <h6 class="text-center"
+                                                style="font-size: 12px;position: absolute;top: 40px;">
+                                                Telah
+                                                Diterima
+                                            </h6>
+                                        </div>
+                                        <% } else { %>
+                                            <div class="d-flex flex-column align-items-center position-relative">
+                                                <div class="bg-secondary d-flex justify-content-center align-items-center"
+                                                    style="width: 30px;height: 30px;border-radius: 50%;">
+
+                                                </div>
+                                                <h6 class="text-center"
+                                                    style="font-size: 12px;position: absolute;top: 40px;">
+                                                    Telah
+                                                    Dikonfirmasi</h6>
+                                            </div>
+                                            <div class="bg-secondary"
+                                                style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center position-relative">
+                                                <div class="bg-secondary"
+                                                    style="width: 30px;height: 30px;border-radius: 50%;">
+
+                                                </div>
+                                                <h6 class="text-center"
+                                                    style="font-size: 12px;position: absolute;top: 40px;">
+                                                    Sedang
+                                                    Dikemas
+                                                </h6>
+                                            </div>
+                                            <div class="bg-secondary"
+                                                style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center position-relative">
+                                                <div class="bg-secondary"
+                                                    style="width: 30px;height: 30px;border-radius: 50%;">
+                                                </div>
+                                                <h6 class="text-center"
+                                                    style="font-size: 12px;position: absolute;top: 40px;">
+                                                    Sedang
+                                                    Dikirim
+                                                </h6>
+                                            </div>
+                                            <div class="bg-secondary"
+                                                style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center position-relative">
+                                                <div class="bg-secondary"
+                                                    style="width: 30px;height: 30px;border-radius: 50%;">
+                                                </div>
+                                                <h6 class="text-center"
+                                                    style="font-size: 12px;position: absolute;top: 40px;">
+                                                    Telah
+                                                    Sampai
+                                                </h6>
+                                            </div>
+                                            <div class="bg-secondary"
+                                                style="height: 10px;width: 50%;margin-left: -10px;margin-right: -10px;">
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center position-relative">
+                                                <div class="bg-secondary"
+                                                    style="width: 30px;height: 30px;border-radius: 50%;">
+                                                </div>
+                                                <h6 class="text-center"
+                                                    style="font-size: 12px;position: absolute;top: 40px;">
+                                                    Telah
+                                                    Diterima
+                                                </h6>
+                                            </div>
+                                            <% } %>
+
+                                </div>
+
+                            </div>
+                            <% } %>
+            </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const url = new URL(window.location.href);
+    const btnFilter = document.getElementById('resetFilterBtn')
+    btnFilter.addEventListener('click', function () {
+        // Menghapus parameter tanggal di URL
+        url.searchParams.delete('q');
+        window.location.href = url.toString(); // Mengalihkan halaman ke URL tanpa filter
+    });
+
+    console.log(url.searchParams);
+    if (url.searchParams.size === 0) {
+        btnFilter.classList.add("d-none")
+    }
+
+
+</script>

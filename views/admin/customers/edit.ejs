@@ -1,0 +1,47 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Data Customer</h1>
+    <a href="/admin/customers" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-arrow-left fa-sm text-white"></i> Kembali</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form method="post" action="/admin/customers/update/<%= data.dataCustomer.id %>?_method=put">
+                    <div class="form-group">
+                        <label for="nameInput">Name</label>
+                        <input type="text" class="form-control" id="nameInput" aria-describedby="emailHelp" name="name"
+                            value="<%= data.dataCustomer.name %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailInput">Email</label>
+                        <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp"
+                            name="email" value="<%= data.dataCustomer.email %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="noHpInput">No Hp</label>
+                        <input type="text" class="form-control" id="noHpInput" aria-describedby="emailHelp" name="no_hp"
+                            value="<%= data.dataCustomer.no_hp %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Jenis Kelamin</label>
+                        <select class="form-control" id="exampleFormControlSelect1" name="jenis_kelamin">
+                            <option value="Laki-laki" <% if (data.dataCustomer.jenis_kelamin==='Laki-laki' ) { %>
+                                selected <% } %>>
+                                    Laki-laki
+                            </option>
+                            <option value="Perempuan" <% if (data.dataCustomer.jenis_kelamin==='Perempuan' ) { %>
+                                selected <% } %>>
+                                    Perempuan
+                            </option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-end">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

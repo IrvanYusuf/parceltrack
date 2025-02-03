@@ -1,0 +1,172 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Tambah Data Transaksi</h1>
+    <a href="/admin/transactions" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-arrow-left fa-sm text-white"></i> Kembali</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <form method="post" action="/admin/transactions/store" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="noResiInput">No Resi</label>
+                        <input type="text" class="form-control" id="noResiInput" aria-describedby="emailHelp"
+                            name="no_resi" value="<%= data.no_resi %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="namaBarangInput">Nama Barang</label>
+                        <input type="text" class="form-control" id="namaBarangInput" aria-describedby="emailHelp"
+                            name="nama_barang" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Customer</label>
+                        <select class="form-control selectpicker" id="exampleFormControlSelect1" name="customer_id"
+                            data-live-search="true" required>
+                            <option disabled selected>Pilih Customer</option>
+                            <% data.dataCustomer.map(customer=> { %>
+                                <option value="<%= customer.id %>">
+                                    <%= customer.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                        <small class="form-text text-muted mt-3">Tidak ada customer ? <a href="/customers/add">Tambah
+                                Customer</a></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Jenis Paket</label>
+                        <select class="form-control selectpicker" name="package_id" data-live-search="true"
+                            id="jenisPaketSelect" required>
+                            <option disabled selected>Pilih Paket</option>
+                            <% data.dataPackages.map(package=> { %>
+                                <option value="<%= package.id %>" data-price="<%= package.price %>">
+                                    <%= package.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="biayaPaketInput">Biaya Paket</label>
+                        <input type="text" class="form-control" id="biayaPaketInput" aria-describedby="emailHelp"
+                            readonly id="biayaPaketInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Stasiun Awal</label>
+                        <select class="form-control selectpicker" name="stasiun_awal_id" data-live-search="true"
+                            required>
+                            <option disabled selected>Pilih Stasiun Awal</option>
+                            <% data.dataStations.map(station=> { %>
+                                <option value="<%= station.id %>">
+                                    <%= station.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">Stasiun Tujuan</label>
+                        <select class="form-control selectpicker" name="stasiun_tujuan_id" data-live-search="true"
+                            required>
+                            <option disabled selected>Pilih Stasiun Tujuan</option>
+                            <% data.dataStations.map(station=> { %>
+                                <option value="<%= station.id %>">
+                                    <%= station.name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <label for="buktiFotoInput">Bukti</label>
+                            <small class="form-text text-muted">Foto yang telah diupload tidak dapat diubah!</small>
+                        </div>
+                        <input type="file" class="form-control" id="buktiFotoInput" aria-describedby="emailHelp"
+                            name="bukti_foto" accept="image/*" multiple required>
+                        <small id="emailHelp" class="form-text text-muted">Maksimal jumlah foto 6</small>
+                        <div id="imagePreview" class="mt-3"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-end">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const jenisPaketSelect = document.getElementById("jenisPaketSelect");
+        const biayaPaketInput = document.getElementById("biayaPaketInput");
+        console.log('jenis paket select', jenisPaketSelect);
+
+        jenisPaketSelect.addEventListener("change", function () {
+            console.log('tes');
+
+            const selectedOption = jenisPaketSelect.options[jenisPaketSelect.selectedIndex];
+            const hargaPaket = selectedOption.getAttribute("data-price");
+
+            biayaPaketInput.value = hargaPaket ? new Intl.NumberFormat('id-ID', {
+                style: 'currency', currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(hargaPaket) : "";
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const stasiunAwalSelect = document.querySelector("select[name='stasiun_awal_id']");
+        const stasiunTujuanSelect = document.querySelector("select[name='stasiun_tujuan_id']");
+
+        // Simpan semua opsi awal Stasiun Tujuan
+        const initialOptions = Array.from(stasiunTujuanSelect.querySelectorAll("option"));
+
+        stasiunAwalSelect.addEventListener("change", function () {
+            const selectedValue = this.value;
+
+            // Kosongkan dropdown Stasiun Tujuan
+            stasiunTujuanSelect.innerHTML = "";
+
+            // Tambahkan kembali semua opsi kecuali yang dipilih di Stasiun Awal
+            initialOptions.forEach(option => {
+                if (option.value !== selectedValue) {
+                    stasiunTujuanSelect.appendChild(option.cloneNode(true));
+                }
+            });
+
+            // Refresh selectpicker agar opsi yang diperbarui muncul dengan benar
+            $(stasiunTujuanSelect).selectpicker('refresh');
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("buktiFotoInput");
+        const imagePreview = document.getElementById("imagePreview");
+
+        // Fungsi untuk menampilkan preview gambar
+        fileInput.addEventListener("change", function (e) {
+            imagePreview.innerHTML = ""; // Bersihkan preview sebelumnya
+
+            const files = e.target.files; // Ambil file yang dipilih
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        const img = document.createElement("img");
+                        img.src = event.target.result;
+                        img.style.maxWidth = "80px";
+                        img.style.maxHeight = "80px";
+                        img.style.marginRight = "10px"; // Spasi antar gambar
+                        img.classList.add("border")
+                        imagePreview.appendChild(img); // Menambahkan gambar ke dalam preview
+                    };
+
+                    reader.readAsDataURL(file); // Membaca file sebagai URL data
+                });
+            }
+        });
+    });
+
+
+
+</script>

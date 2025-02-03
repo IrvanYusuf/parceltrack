@@ -1,0 +1,220 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Pendapatan (Bulan)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= new Intl.NumberFormat('id-ID', { style: 'currency' , currency: 'IDR' ,
+                                maximumFractionDigits: 0 }).format(data.totalPendapatanPerBulan) %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Pendapatan
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= new Intl.NumberFormat('id-ID', { style: 'currency' , currency: 'IDR' ,
+                                maximumFractionDigits: 0 }).format(data.totalPendapatan) %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pending Requests Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Total Paket Selesai
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= data.dataFinishPackage %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-box fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Total Customer
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <%= data.totalCustomer %>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Content Row -->
+
+<div class="row">
+    <!-- Area Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4" style="height: 400px;">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Distribusi Customer per Hari
+                </h6>
+
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area" style="flex-grow: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;">
+                    <canvas id="myAreaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4" style="height: 400px;">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    Distribusi Status Paket
+                </h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body h-auto d-flex justify-content-center align-items-center">
+                <div class="chart-pie pt-4 pb-2" style="flex-grow: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Mengambil data 
+    const dataCustomerPerDay = JSON.parse('<%- JSON.stringify(data.dataCustomerLabel) %>')
+    const finishPackages = JSON.parse('<%- JSON.stringify(data.dataFinishPackage) %>');
+    const transitPackages = JSON.parse('<%- JSON.stringify(data.dataTransitPackage) %>');
+    const dataPendapatanPerBulan = [
+        { status: "Selesai", total: finishPackages },
+        { status: "Dikirim", total: transitPackages },
+        // Data lainnya
+    ];
+
+    // Menyiapkan data untuk chart
+    const labels = dataPendapatanPerBulan.map(item => item.status);
+    const dataValues = dataPendapatanPerBulan.map(item => item.total);
+
+    // Membuat Pie Chart menggunakan Chart.js
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut', // Jenis chart pie
+        data: {
+            labels: labels, // Data labels (bulan)
+            datasets: [{
+                data: dataValues, // Data yang ditampilkan dalam chart
+                backgroundColor: ['#1cc88a', '#4e73df'], // Warna untuk chart pie
+                hoverOffset: 4 // Efek saat hover
+            }]
+        },
+        options: {
+            responsive: true, // Responsif terhadap ukuran layar
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    usePointStyle: true,
+                    labels: {
+                        pointStyle: 'circle', // Menetapkan titik ke bentuk bulat
+                        pointRadius: 10, // Ukuran titik
+                        padding: 15 // Jarak antar legend
+                    }
+                },
+
+            }
+        }
+    });
+
+    const labelsAreaChart = dataCustomerPerDay.label
+    const dataAreaChart = dataCustomerPerDay.data
+
+    const ctx2 = document.getElementById('myAreaChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line', // Jenis chart: 'line' untuk Area Chart
+        data: {
+            labels: labelsAreaChart, // Label untuk sumbu X (tanggal)
+            datasets: [{
+                label: 'Jumlah Customer Per Hari', // Nama dataset
+                data: dataAreaChart, // Data untuk sumbu Y (jumlah customer)
+                fill: true, // Mengisi area chart
+                borderColor: '#4e73df', // Warna garis
+                backgroundColor: 'rgba(78, 115, 223, 0.2)', // Warna latar belakang area chart
+                tension: 0.3 // Mengatur kelengkungan garis
+            }]
+        },
+        options: {
+            responsive: true, // Agar chart responsif
+            scales: {
+                y: {
+                    beginAtZero: true, // Memulai sumbu Y dari angka 0
+                    ticks: {
+                        stepSize: 1, // Mengatur jarak antara tick untuk memastikan angka bulat
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true, // Menampilkan legenda
+                    position: 'top' // Posisi legenda
+                }
+            }
+        }
+    });
+</script>
