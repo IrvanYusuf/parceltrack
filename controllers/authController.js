@@ -1,5 +1,6 @@
 const supabase = require("../config/supabase");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const showLogin = async (req, res) => {
   try {
     // const {} = await supabase.from("tbl_users").select()
@@ -33,12 +34,17 @@ const postLogin = async (req, res) => {
       res.render("admin/auth/login", { data });
     }
 
-    req.session.user = {
+    const userData = {
       id: dataLogin[0].id,
       email: dataLogin[0].email,
       name: dataLogin[0].name,
       role: dataLogin[0].role.role,
     };
+    const token = jwt.sign(userData, process.env.SESSION_SECRET, {
+      expiresIn: "1d",
+    });
+    res.cookie("user_data", token, { httpOnly: true, secure: true });
+
     res.redirect("/admin/");
   } catch (error) {
     console.log(error);
@@ -46,12 +52,8 @@ const postLogin = async (req, res) => {
 };
 const logout = async (req, res) => {
   try {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send("Failed to logout");
-      }
-      res.redirect("/admin/auth/login");
-    });
+    res.clearCookie("user_data");
+    res.redirect("/admin/auth/login");
   } catch (error) {
     console.log(error);
   }

@@ -91,7 +91,6 @@ const show = async (req, res) => {
       .lte("created_at", moment().format("YYYY-MM-DD 23:59:59"))
       .order("created_at", { ascending: true });
 
-    console.log(customerPerHari);
     const customersPerDay = customerPerHari.reduce((acc, customer) => {
       const tanggal = customer.created_at.split("T")[0]; // Ambil hanya tanggal
 
@@ -103,15 +102,12 @@ const show = async (req, res) => {
       return acc;
     }, {});
 
-    console.log(customersPerDay);
     const last7Days = [...Array(7)]
       .map((_, i) => moment().subtract(i, "days").format("YYYY-MM-DD"))
       .reverse(); // Supaya urutan dari yang paling lama ke terbaru
 
     // Pastikan setiap hari ada nilai, jika tidak ada isi dengan 0
     const dataPerDay = last7Days.map((date) => customersPerDay[date] || 0);
-    console.log(last7Days);
-    console.log(dataPerDay);
 
     const dataCustomerLabel = {
       label: last7Days,

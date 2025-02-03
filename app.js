@@ -7,6 +7,10 @@ const dotenv = require("dotenv");
 const routesWeb = require("./routes/index.js");
 const methodOverride = require("method-override");
 const clientRoutes = require("./routes/clientRoutes.js");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
 
 dotenv.config();
 app.set("views", path.join(__dirname, "views"));
@@ -21,17 +25,24 @@ app.use(express.static(path.join(__dirname, "uploads")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true, maxAge: 24 * 60 * 60 * 1000 },
-  })
-);
-
 app.use((req, res, next) => {
-  res.locals.user = req.session.user;
+  // Ambil token dari cookie (misalnya 'user_data')
+  const token = req.cookies.user_data;
+
+  if (token) {
+    try {
+      // Dekode token dan verifikasi (jika perlu)
+      const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+
+      // Simpan data user ke res.locals untuk akses di view
+      res.locals.user = decoded;
+    } catch (err) {
+      console.log("Token invalid or expired");
+      res.locals.user = null;
+    }
+  } else {
+    res.locals.user = null;
+  }
   next();
 });
 

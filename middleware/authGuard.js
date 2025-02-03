@@ -1,15 +1,16 @@
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const authGuard = (allowedRoles = []) => {
   return (req, res, next) => {
     try {
-      const user = req.session.user;
-      console.log("User Session:", user);
+      const token = req.cookies.user_data;
 
-      if (!user) {
+      if (!token) {
         console.log("User not found, redirecting to login");
         return res.redirect("/admin/auth/login");
       }
-
-      if (!user.role || !allowedRoles.includes(user.role)) {
+      const decoded = jwt.verify(token, process.env.SESSION_SECRET);
+      if (!decoded.role || !allowedRoles.includes(decoded.role)) {
         console.log("User role not authorized, redirecting to unauthorized");
         return res.redirect("/unauthorized");
       }
